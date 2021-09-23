@@ -13,5 +13,3 @@ class SignalBus(QObject):
         if not SignalBus.__instance:
             SignalBus.__instance = SignalBus()
         return SignalBus.__instance
-
-

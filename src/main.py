@@ -2,10 +2,12 @@ from PyQt5.QtCore import QDir, Qt, QUrl, pyqtSlot, pyqtSignal, QCoreApplication
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtGui import QIcon, QKeySequence
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
-        QPushButton, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget,
-        QTableWidget, QTableWidgetItem, QMainWindow, QAction,
-        QAbstractScrollArea, QShortcut)
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout,
+                             QLabel, QPushButton, QSizePolicy, QSlider,
+                             QStyle, QVBoxLayout, QWidget,
+                             QTableWidget, QTableWidgetItem,
+                             QMainWindow, QAction,
+                             QAbstractScrollArea, QShortcut)
 
 from utils import create_action, format_time
 from label_creator import LabelCreatorWidget
@@ -44,7 +46,7 @@ class VideoWindow(QMainWindow):
         videoWidget = self.create_player()
         self.errorLabel = QLabel()
         self.errorLabel.setSizePolicy(QSizePolicy.Preferred,
-                QSizePolicy.Maximum)
+                                      QSizePolicy.Maximum)
         self.create_menu_bar()
         wid = QWidget(self)
         self.setCentralWidget(wid)
@@ -59,7 +61,7 @@ class VideoWindow(QMainWindow):
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         videoWidget = QVideoWidget()
-        self.editorWidget = LabelEditorWidget(control = self)
+        self.editorWidget = LabelEditorWidget(control=self)
         self.creatorWidget = LabelCreatorWidget()
         self.create_control()
 
@@ -132,14 +134,14 @@ class VideoWindow(QMainWindow):
 
     def create_menu_bar(self):
         openAction = create_action('open.png', '&Open', 'Ctrl+O', 'Open video',
-                self.openFile, self)
+                                   self.openFile, self)
         csvExportAction = create_action('save.png', '&Export', 'Ctrl+S',
-                'Export to csv', self.exportCsv, self)
+                                        'Export to csv', self.exportCsv, self)
         csvImportAction = create_action('open.png', '&Import', 'Ctrl+I',
-                'Import from csv', self.importCsv, self)
+                                        'Import from csv',
+                                        self.importCsv, self)
         exitAction = create_action('exit.png', '&Exit', 'Ctrl+Q', 'Exit',
-                self.exitCall, self)
-
+                                   self.exitCall, self)
         menuBar = self.menuBar()
         fileMenu = menuBar.addMenu('&File')
         fileMenu.addAction(openAction)
@@ -154,7 +156,6 @@ class VideoWindow(QMainWindow):
         spWidget.setHorizontalStretch(1)
         self.creatorWidget.setSizePolicy(spWidget)
         self.editorWidget.setSizePolicy(spWidget)
-
 
         labellingLayout.addWidget(self.creatorWidget, 1)
         labellingLayout.addWidget(self.editorWidget, 1)
@@ -186,7 +187,7 @@ class VideoWindow(QMainWindow):
         buttonsPlayerLayout.addWidget(self.playButton)
         buttonsPlayerLayout.addWidget(self.adv3Button)
         buttonsPlayerLayout.addWidget(self.advanceButton)
-        
+
         buttonsRateLayout = QHBoxLayout()
         buttonsRateLayout.setContentsMargins(0, 0, 0, 0)
         buttonsLayout.addLayout(buttonsRateLayout, 1)
@@ -204,7 +205,7 @@ class VideoWindow(QMainWindow):
 
     def openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open video",
-                QDir.homePath())
+                                                  QDir.homePath())
 
         if fileName != '':
             self.mediaPlayer.setMedia(
@@ -260,12 +261,12 @@ class VideoWindow(QMainWindow):
 
     def advance(self, t=10000):
         currentPos = self.mediaPlayer.position()
-        nextPos  = currentPos + t
+        nextPos = currentPos + t
         self.setPosition(nextPos)
 
     def back(self, t=10000):
         currentPos = self.mediaPlayer.position()
-        nextPos  = max(currentPos - t, 0)
+        nextPos = max(currentPos - t, 0)
         self.setPosition(nextPos)
 
     def mediaStateChanged(self, state):
@@ -314,13 +315,14 @@ class VideoWindow(QMainWindow):
         else:
             suggestedName = QUrl.fromLocalFile(QDir.homePath())
 
-        fileUrl, _ = QFileDialog.getOpenFileUrl(self, "Import marks", suggestedName, "CSV (*.csv)")
+        fileUrl, _ = QFileDialog.getOpenFileUrl(self, "Import marks",
+                                                suggestedName, "CSV (*.csv)")
         fileName = fileUrl.toLocalFile()
 
         if fileName != '':
-             with open(fileName, mode='r') as csv_file:
+            with open(fileName, mode='r') as csv_file:
                 labels = csv.reader(csv_file, delimiter=',', quotechar='"',
-                        quoting=csv.QUOTE_MINIMAL)
+                                    quoting=csv.QUOTE_MINIMAL)
                 self.editorWidget.set_marks(labels)
 
     def exportCsv(self):
@@ -328,14 +330,16 @@ class VideoWindow(QMainWindow):
             suggestedName = QUrl.fromLocalFile(self.getCSVPath())
         else:
             suggestedName = QUrl.fromLocalFile(QDir.homePath())
-    
-        fileUrl, _ = QFileDialog.getSaveFileUrl(self, "Export marks", QUrl(suggestedName), "CSV (*.csv)")
+
+        fileUrl, _ = QFileDialog.getSaveFileUrl(self, "Export marks",
+                                                QUrl(suggestedName),
+                                                "CSV (*.csv)")
         fileName = fileUrl.toLocalFile()
 
         if fileName != '':
-            with open(fileName, mode='w') as csv_file:
+            with open(fileName, mode='w', newline='') as csv_file:
                 writer = csv.writer(csv_file, delimiter=',', quotechar='"',
-                        quoting=csv.QUOTE_MINIMAL)
+                                    quoting=csv.QUOTE_MINIMAL)
                 marks = self.editorWidget.get_marks()
                 writer.writerows(marks)
 
@@ -354,5 +358,3 @@ if __name__ == '__main__':
     player.resize(940, 480)
     player.show()
     sys.exit(app.exec_())
-
-

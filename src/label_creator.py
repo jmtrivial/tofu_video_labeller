@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import (QLabel, QDialog, QFormLayout, QGroupBox,
-        QPushButton, QSizePolicy, QStyle, QHBoxLayout, QVBoxLayout, QWidget, QLineEdit,
-        QTableWidget, QTableWidgetItem, QAction, QAbstractScrollArea, QFrame,
-        QDialogButtonBox, QKeySequenceEdit, QAbstractItemView, QFileDialog)
+                             QPushButton, QSizePolicy, QStyle,
+                             QHBoxLayout, QVBoxLayout, QWidget, QLineEdit,
+                             QTableWidget, QTableWidgetItem,
+                             QAction, QAbstractScrollArea, QFrame,
+                             QDialogButtonBox, QKeySequenceEdit,
+                             QAbstractItemView, QFileDialog)
 from PyQt5.QtCore import pyqtSlot, QDir, QUrl
 from PyQt5.QtGui import QIcon, QIntValidator, QKeySequence
 import csv
@@ -35,7 +38,7 @@ class LabelCreatorWidget(QWidget):
         if button:
             row = self.tableWidget.indexAt(button.pos()).row()
             self.deleteRowInternal(row)
-            
+
     def deleteRowInternal(self, row):
         keySeqStr = self.tableWidget.item(row, 2).text()
         self.comm.delLabelSignal.emit(keySeqStr)
@@ -53,7 +56,7 @@ class LabelCreatorWidget(QWidget):
         self.exportButton.setEnabled(True)
         self.exportButton.setText("Export")
         self.ieBLayout.addWidget(self.exportButton)
-        
+
         self.exportButton.clicked.connect(self.exportLabels)
         self.importButton.clicked.connect(self.importLabels)
 
@@ -65,42 +68,46 @@ class LabelCreatorWidget(QWidget):
             cellLabel = self.tableWidget.item(row, 1)
             cellShortcut = self.tableWidget.item(row, 2)
             print(row)
-            labels.append([cellID.text(), cellLabel.text(),cellShortcut.text()])
+            labels.append([cellID.text(), cellLabel.text(),
+                           cellShortcut.text()])
         return labels
-    
+
     def updateLabels(self, labels):
         self.removeAllLabels()
         # add new labels
         for line in labels:
             self.addLabelInternal(line[0], line[1], QKeySequence(line[2]))
-        
-        
+
     def removeAllLabels(self):
         rows = self.tableWidget.rowCount()
         for row in range(0, rows - 1):
             self.deleteRowInternal(0)
-        
 
     def exportLabels(self):
-        fileUrl, _ = QFileDialog.getSaveFileUrl(self.importExportButtons, "Export labels", QUrl.fromLocalFile(QDir.homePath()), "CSV (*.csv)")
+        fileUrl, _ = QFileDialog.getSaveFileUrl(self.importExportButtons,
+                                                "Export labels",
+                                                QUrl.fromLocalFile(QDir.homePath()),
+                                                "CSV (*.csv)")
         fileName = fileUrl.toLocalFile()
 
         if fileName != '':
-            with open(fileName, mode='w') as csv_file:
+            with open(fileName, mode='w', newline='') as csv_file:
                 writer = csv.writer(csv_file, delimiter=',', quotechar='"',
-                        quoting=csv.QUOTE_MINIMAL)
+                                    quoting=csv.QUOTE_MINIMAL)
                 labels = self.getLabels()
                 writer.writerows(labels)
 
-        
     def importLabels(self):
-        fileUrl, _ = QFileDialog.getOpenFileUrl(self.importExportButtons, "Import labels", QUrl.fromLocalFile(QDir.homePath()), "CSV (*.csv)")
+        fileUrl, _ = QFileDialog.getOpenFileUrl(self.importExportButtons,
+                                                "Import labels",
+                                                QUrl.fromLocalFile(QDir.homePath()),
+                                                "CSV (*.csv)")
         fileName = fileUrl.toLocalFile()
 
         if fileName != '':
-             with open(fileName, mode='r') as csv_file:
+            with open(fileName, mode='r') as csv_file:
                 labels = csv.reader(csv_file, delimiter=',', quotechar='"',
-                        quoting=csv.QUOTE_MINIMAL)
+                                    quoting=csv.QUOTE_MINIMAL)
                 self.updateLabels(labels)
 
     def createTable(self):
@@ -111,7 +118,7 @@ class LabelCreatorWidget(QWidget):
                 QAbstractScrollArea.AdjustToContents)
         self.tableWidget.verticalHeader().hide()
         self.tableWidget.setHorizontalHeaderLabels(['id', 'label',
-            'shortcut', ''])
+                                                    'shortcut', ''])
         newButton = self._create_newButton()
         self.tableWidget.setCellWidget(0, 3, newButton)
         self.tableWidget.resizeColumnsToContents()
@@ -125,7 +132,7 @@ class LabelCreatorWidget(QWidget):
             label = newLabelDialog.label.text()
             keySeq = newLabelDialog.shortcut.keySequence()
             self.addLabelInternal(lid, label, keySeq)
-            
+
     def addLabelInternal(self, lid, label, keySeq):
         index = self.tableWidget.rowCount() - 1
         self.tableWidget.setItem(index, 0, QTableWidgetItem(lid))
@@ -161,8 +168,8 @@ class NewLabelDialog(QDialog):
 
     def initUI(self):
         self.createFormGroupBox()
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | \
-                QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
+                                     QDialogButtonBox.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
@@ -183,5 +190,3 @@ class NewLabelDialog(QDialog):
         layout.addRow(QLabel('label:'), self.label)
         layout.addRow(QLabel('shortcut:'), self.shortcut)
         self.formGroupBox.setLayout(layout)
-
-

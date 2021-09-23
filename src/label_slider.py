@@ -6,6 +6,7 @@ from PyQt5.QtGui import QPainter, QFont, QColor, QPen
 
 from signals import SignalBus
 
+
 class LabelSliderWidget(QWidget):
 
     def __init__(self):
@@ -16,7 +17,7 @@ class LabelSliderWidget(QWidget):
         self.setMinimumSize(170, 30)
         self.setMaximumHeight(30)
         self.value = 2
-        self.num   = [2, 4, 6, 8]
+        self.num = [2, 4, 6, 8]
 
     def setValue(self, value):
         self.value = value
@@ -28,13 +29,13 @@ class LabelSliderWidget(QWidget):
         qp.end()
 
     def drawWidget(self, qp):
-        MAX_CAPACITY  = 8
+        MAX_CAPACITY = 8
         OVER_CAPACITY = 10
         font = QFont('Serif', 7, QFont.Light)
         qp.setFont(font)
         size = self.size()
-        w    = size.width()
-        h    = size.height()
+        w = size.width()
+        h = size.height()
         step = int(round(w / 5))
         till = int(((w / OVER_CAPACITY) * self.value))
         full = int(((w / OVER_CAPACITY) * MAX_CAPACITY))
@@ -98,5 +99,3 @@ class Example(QWidget):
     def changeValue(self, value):
         self.c.updateBW.emit(value)
         self.wid.repaint()
-
-
