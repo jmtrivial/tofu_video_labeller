@@ -68,8 +68,8 @@ class LabelCreatorWidget(QWidget):
             cellID = self.tableWidget.item(row, 0)
             cellLabel = self.tableWidget.item(row, 1)
             cellShortcut = self.tableWidget.item(row, 2)
-            cellGroup = elf.tableWidget.item(row, 4)
-            cellPredIncomp = elf.tableWidget.item(row, 5)
+            cellGroup = self.tableWidget.item(row, 4)
+            cellPredIncomp = self.tableWidget.item(row, 5)
             labels.append([cellID.text(), cellLabel.text(), cellShortcut.text(), cellGroup.text(), cellPredIncomp.text()])
         return labels
     
