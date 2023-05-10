@@ -286,7 +286,11 @@ class VideoWindow(QMainWindow):
             self.rate = 1
 
     def exitCall(self):
-        QCoreApplication.quit()
+        try:
+            QCoreApplication.quit()
+        except Exception, e:
+            os.abort()
+
 
     def play(self):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
