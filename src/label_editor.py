@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QLabel, QDialog, QFormLayout, QGroupBox,
         QPushButton, QSizePolicy, QStyle, QVBoxLayout, QWidget, QLineEdit,
         QTableWidget, QTableWidgetItem, QAction, QAbstractScrollArea, QFrame,
-        QDialogButtonBox)
+        QDialogButtonBox, QAbstractItemView)
 from PyQt5.QtCore import pyqtSlot, Qt, QEvent
 from PyQt5.QtGui import QIcon, QColor
 
@@ -38,6 +38,7 @@ class LabelEditorWidget(QWidget):
     def createTable(self):
         self.tableWidget = QTableWidget()
         self.tableWidget.setRowCount(1)
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setSizeAdjustPolicy(
                 QAbstractScrollArea.AdjustToContents)
@@ -46,6 +47,16 @@ class LabelEditorWidget(QWidget):
         self.tableWidget.setToolTip("Right click on a timestamp to set the player.")
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.viewport().installEventFilter(self)
+        self.tableWidget.selectionModel().currentChanged.connect(self.selection_changed)
+
+
+    def selection_changed(self, sel1, sel2):
+        row = sel1.row()
+        begin, end = self.getBeginEndRow(row)
+        if begin >= 0 and end != str_to_ms("199:59:59,999"):
+            self.control.setActiveLabel(row, begin, end)
+        else:
+            self.control.unsetActiveLabel()
 
 
     def getBeginEndRow(self, row):
@@ -167,6 +178,9 @@ class LabelEditorWidget(QWidget):
         return super(LabelEditorWidget, self).eventFilter(source, event)
 
     def onSortItems(self):
+        self.tableWidget.selectionModel().clearSelection()
+        self.control.unsetActiveLabel()
+
         # load data
         entries = self.get_marks()
         
@@ -222,7 +236,6 @@ class LabelEditorWidget(QWidget):
 
     def __reset_label_mode(self, row):
         label = self.tableWidget.item(row, 0).text()
-        print(label, self.labels_state)
         if label in self.labels_state:
             self.labels_state[label] = False
 
@@ -261,6 +274,15 @@ class LabelEditorWidget(QWidget):
 
         for line in marks:
             self.new_mark_begin_end_interface(line[0], line[1], line[2])
+        self.update_incompatibilities()
+
+    def setStartMark(self, row, value):
+        self.tableWidget.item(row, 1).setText(format_time(value))
+        self.update_incompatibilities()
+
+
+    def setEndMark(self, row, value):
+        self.tableWidget.item(row, 2).setText(format_time(value))
         self.update_incompatibilities()
 
     def updateSelectedTimestamp(self, ts):

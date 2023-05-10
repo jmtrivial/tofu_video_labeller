@@ -162,7 +162,7 @@ class VideoWindow(QMainWindow):
         self.rateBox = QLabel(str(self.rate)+'x', self)
         self.rateBox.setAlignment(Qt.AlignCenter)
 
-        self.labelSlider = LabelSliderWidget()
+        self.labelSlider = LabelSliderWidget(self)
 
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 0)
@@ -243,9 +243,25 @@ class VideoWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.positionSlider)
-        layout.addWidget(self.labelSlider)
         layout.addLayout(buttonsLayout)
+        layout.addWidget(self.labelSlider)
         return layout
+
+
+    def setActiveLabel(self, row, begin, end):
+        self.activeRow = row
+        self.labelSlider.setActiveLabel(begin, end)
+
+    def unsetActiveLabel(self):
+        self.labelSlider.unsetActiveLabel()
+
+    def labelSliderStartChanged(self, value):
+        self.setPosition(value)
+        self.editorWidget.setStartMark(self.activeRow, value)
+
+    def labelSliderEndChanged(self, value):
+        self.setPosition(value)
+        self.editorWidget.setEndMark(self.activeRow, value)
 
     def openFile(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Open video",
@@ -331,6 +347,7 @@ class VideoWindow(QMainWindow):
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
+        self.labelSlider.setTotalRange(0, duration)
 
     def setPosition(self, position):
         self.mediaPlayer.setPosition(position)
