@@ -44,7 +44,7 @@ class LabelEditorWidget(QWidget):
                 QAbstractScrollArea.AdjustToContents)
         self.tableWidget.setHorizontalHeaderLabels(['label', 'begin', 'end',
             ''])
-        self.tableWidget.setToolTip("Right click on a timestamp to set the player. Left click on a row to edit timestamps with the range slider.")
+        self.tableWidget.setToolTip("Right click on a timestamp to set the player.\nLeft click on a row to edit timestamps with the range slider.")
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.viewport().installEventFilter(self)
         self.tableWidget.selectionModel().currentChanged.connect(self.selection_changed)
