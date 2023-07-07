@@ -4,6 +4,9 @@ name: Build GUI exe with PyInstaller
 on:
   push:
     branches: [ master ]
+  workflow_dispatch:
+    workflows: [Release Executable]
+
 
 jobs:
   release-project: 
